@@ -277,4 +277,36 @@ async function run() {
             }
         });
 
-        
+        // [ PATCH: Update session (F:studySessions => UpdateModal)]
+        app.patch('/update-session/:id', verifyFBToken, async (req, res) => {
+            const sessionId = req.params.id;
+            const updatedData = req.body;
+
+            try {
+                const result = await sessionsCollection.updateOne(
+                    { _id: new ObjectId(sessionId) },
+                    { $set: updatedData }
+                );
+
+                res.send(result);
+            } catch (err) {
+                res.status(500).send({ message: 'Failed to update session', error: err });
+            }
+        });
+
+        // [rejection for session approved (F:studySessions=> SessionRow)]
+        app.patch('/reject-session/:id', verifyFBToken, async (req, res) => {
+            const { id } = req.params;
+
+            try {
+                const result = await sessionsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: { status: 'rejected' } }
+                );
+                res.send(result);
+            } catch (err) {
+                res.status(500).send({ message: 'Rejection failed' });
+            }
+        });
+
+     
