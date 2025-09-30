@@ -427,4 +427,45 @@ async function run() {
         });
 
 
+        // CollabStudy: NOTES API:================================================
+        // []
+        app.get('/notes/:email', verifyFBToken, async (req, res) => {
+            const email = req.params.email;
+            const notes = await notesCollection.find({ email }).toArray();
+            res.send(notes);
+        });
+
+        // []
+        app.post('/notes', verifyFBToken, async (req, res) => {
+            try {
+                const note = req.body;
+                note.createdAt = new Date();
+                const result = await notesCollection.insertOne(note);
+                res.send(result);
+            } catch (error) {
+                console.error('Error creating note:', error);
+                res.status(500).send({ message: 'Internal server error' });
+            }
+        });
+
+        // []
+        app.patch('/notes/:id', verifyFBToken, async (req, res) => {
+            const id = req.params.id;
+            const updated = req.body;
+            const result = await notesCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updated }
+            );
+            res.send(result);
+        });
+
+        // []
+        app.delete('/notes/:id', verifyFBToken, async (req, res) => {
+            const id = req.params.id;
+            const result = await notesCollection.deleteOne({ _id: new ObjectId(id) });
+            res.send(result);
+        });
+
+
+
       
