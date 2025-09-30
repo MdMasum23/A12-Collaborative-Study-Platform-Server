@@ -74,4 +74,28 @@ async function run() {
         };
 
 
-   
+        // CollabStudy: USERS API:================================================
+
+        app.get('/users/:email/role', async (req, res) => {
+            try {
+                const email = req.params.email;
+
+                if (!email) {
+                    return res.status(400).send({ message: 'Email is required' });
+                }
+
+                const user = await usersCollection.findOne({ email });
+
+                if (!user) {
+                    return res.status(404).send({ message: 'User not found' });
+                }
+
+                res.send({ role: user.role || 'user' }); // default to 'user' if not set
+            } catch (error) {
+                console.error('Error getting user role:', error);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+
+
+       
