@@ -124,3 +124,27 @@ async function run() {
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         });
+
+        // []
+        app.patch('/users/role/:id', verifyFBToken, async (req, res) => {
+            const id = req.params.id;
+            const { role } = req.body;
+            const filter = { _id: new ObjectId(id) };
+            const updateDoc = { $set: { role } };
+
+            const result = await usersCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
+
+        // []
+        app.delete('/users/:id', verifyFBToken, async (req, res) => {
+            const { id } = req.params;
+
+            const result = await usersCollection.deleteOne({ _id: new ObjectId(id) });
+
+            res.send(result);
+        });
+
+
+
+     
