@@ -554,4 +554,33 @@ async function run() {
         });
 
 
-        
+        // [DELETE a material by ID (F:UploadMaterials)]
+        app.delete('/materials/:id', verifyFBToken, async (req, res) => {
+            try {
+                const id = req.params.id;
+                const result = await materialsCollection.deleteOne({ _id: new ObjectId(id) });
+
+                if (result.deletedCount > 0) {
+                    res.send({ message: 'Material deleted successfully', deletedCount: result.deletedCount });
+                } else {
+                    res.status(404).send({ message: 'Material not found' });
+                }
+            } catch (error) {
+                res.status(500).send({ message: 'Failed to delete material', error: error.message });
+            }
+        });
+
+
+        // Send a ping to confirm a successful connection
+        // await client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    } finally {
+        // Ensures that the client will close when you finish/error
+        // await client.close();
+    }
+}
+run().catch(console.dir);
+
+
+
+      
