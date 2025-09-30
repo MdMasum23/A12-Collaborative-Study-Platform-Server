@@ -208,4 +208,11 @@ async function run() {
             res.send(tutors);
         });
 
-      
+        // [details about the session (F:SessionDetails)]:
+        app.get('/sessions/:id', verifyFBToken, async (req, res) => {
+            const id = req.params.id;
+            const session = await sessionsCollection.findOne({ _id: new ObjectId(id), status: 'approved' });
+            res.send(session);
+        });
+
+       
