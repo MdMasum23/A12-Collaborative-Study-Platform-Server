@@ -468,4 +468,30 @@ async function run() {
 
 
 
-      
+        // CollabStudy: MATERIALS API:==============================================
+        // [Get all materials uploaded by a tutor (F:UploadMaterials)]
+        app.get('/materials/tutor/:email', verifyFBToken, async (req, res) => {
+            const email = req.params.email;
+            const result = await materialsCollection.find({ tutorEmail: email }).toArray();
+            res.send(result);
+        });
+
+        // Get all materials for admin
+        app.get('/materials/all', verifyFBToken, async (req, res) => {
+            try {
+                const materials = await materialsCollection.find({}).toArray();
+                res.send(materials);
+            } catch (err) {
+                res.status(500).send({ error: 'Failed to get materials' });
+            }
+        });
+
+        app.get('/materials/session/:sessionId', verifyFBToken, async (req, res) => {
+            const sessionId = req.params.sessionId;
+            const materials = await materialsCollection
+                .find({ sessionId })
+                .toArray();
+            res.send(materials);
+        });
+
+        
