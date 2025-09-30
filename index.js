@@ -582,5 +582,14 @@ async function run() {
 run().catch(console.dir);
 
 
+// Test route
+app.get('/', (req, res) => {
+    res.send('CollabStudy Platform Server is running...');
+});
+
+// listener
+app.listen(port, () => {
+    console.log(`🚀 Server running on http://localhost:${port}`);
+});
 
       
