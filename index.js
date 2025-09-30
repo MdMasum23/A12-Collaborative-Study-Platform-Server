@@ -186,4 +186,26 @@ async function run() {
             }
         });
 
+        // [GET All Tutor list (F:Tutor)]
+        app.get('/tutors', async (req, res) => {
+            const sessions = await sessionsCollection.find({ status: 'approved' }).toArray();
+
+            const tutors = [];
+
+            sessions.forEach(session => {
+                const existingTutor = tutors.find(t => t.tutorEmail === session.tutorEmail);
+                if (existingTutor) {
+                    existingTutor.sessionCount += 1;
+                } else {
+                    tutors.push({
+                        tutorName: session.tutorName,
+                        tutorEmail: session.tutorEmail,
+                        sessionCount: 1
+                    });
+                }
+            });
+
+            res.send(tutors);
+        });
+
       
