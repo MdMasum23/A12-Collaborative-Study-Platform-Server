@@ -241,4 +241,40 @@ async function run() {
         });
 
 
+        // [Adding session (F:CreateSession)]:
+        app.post('/sessions', verifyFBToken, async (req, res) => {
+            try {
+                const sessionData = req.body;
+
+                const result = await sessionsCollection.insertOne(sessionData);
+                res.status(201).send(result);
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ message: 'Failed to add session' });
+            }
+        });
+
+
+        // [ (F:studySessions=> ApproveModal)]
+        app.patch('/approve-session/:id', verifyFBToken, async (req, res) => {
+            const { id } = req.params;
+            const { isPaid, price } = req.body;
+
+            try {
+                const result = await sessionsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    {
+                        $set: {
+                            status: 'approved',
+                            isPaid: isPaid,
+                            price: isPaid ? Number(price) : 0,
+                        },
+                    }
+                );
+                res.send(result);
+            } catch (err) {
+                res.status(500).send({ message: 'Approval failed' });
+            }
+        });
+
         
