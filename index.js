@@ -215,4 +215,16 @@ async function run() {
             res.send(session);
         });
 
-       
+        // [Get sessions by tutor email (F:CreatedAllSessions)]
+        app.get('/sessions/tutor/:email', verifyFBToken, async (req, res) => {
+            try {
+                const email = req.params.email;
+                const query = { tutorEmail: email };
+                const result = await sessionsCollection.find(query).toArray();
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to fetch sessions.' });
+            }
+        });
+
+     
