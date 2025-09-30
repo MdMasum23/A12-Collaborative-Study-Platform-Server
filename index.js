@@ -494,4 +494,64 @@ async function run() {
             res.send(materials);
         });
 
+        // GET /materials/:sessionId
+        app.get('/materials/:sessionId', verifyFBToken, async (req, res) => {
+            const sessionId = req.params.sessionId;
+
+            try {
+                const materials = await materialsCollection.find({ sessionId }).toArray();
+                res.send(materials);
+            } catch (error) {
+                res.status(500).send({ message: error.message });
+            }
+        });
+
+
+        //[tutor materials added (F:UploadMaterials)]
+        app.post('/materials', verifyFBToken, async (req, res) => {
+            try {
+                const material = req.body;
+
+                const result = await materialsCollection.insertOne({
+                    ...material,
+                    createdAt: new Date()
+                });
+
+                res.send({
+                    message: 'Material uploaded successfully!',
+                    insertedId: result.insertedId
+                });
+            } catch (err) {
+                console.error('Error uploading material:', err);
+                res.status(500).send({ message: 'Server error' });
+            }
+        });
+
+
+        app.put('/materials/:id', verifyFBToken, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const { title, driveLink, image } = req.body;
+
+                if (!title || !driveLink || !image) {
+                    return res.status(400).json({ error: 'All fields are required.' });
+                }
+
+                const updateDoc = {
+                    $set: { title, driveLink, image }
+                };
+
+                const result = await materialsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    updateDoc
+                );
+
+                res.send(result);
+            } catch (err) {
+                console.error('Update error:', err.message);
+                res.status(500).json({ error: 'Internal Server Error' });
+            }
+        });
+
+
         
