@@ -324,5 +324,21 @@ async function run() {
             }
         });
 
+       
 
-      
+        // [ (F:studySessions=> SessionRow)]
+        app.delete('/delete-session/:id', verifyFBToken, async (req, res) => {
+            const { id } = req.params;
+
+            try {
+                const result = await sessionsCollection.deleteOne({
+                    _id: new ObjectId(id),
+                    status: 'approved',
+                });
+                res.send(result);
+            } catch (err) {
+                res.status(500).send({ message: 'Deletion failed' });
+            }
+        });
+
+
