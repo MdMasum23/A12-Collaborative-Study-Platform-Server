@@ -309,4 +309,20 @@ async function run() {
             }
         });
 
-     
+        // [for req rejection to approval (F:CreatedAllSessions)]
+        app.patch('/sessions/request/:id', verifyFBToken, async (req, res) => {
+            try {
+                const id = req.params.id;
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = {
+                    $set: { status: 'pending' }
+                };
+                const result = await sessionsCollection.updateOne(filter, updateDoc);
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ error: 'Failed to update session status.' });
+            }
+        });
+
+
+      
