@@ -147,4 +147,43 @@ async function run() {
 
 
 
-     
+        // CollabStudy: SESSIONS API:=============================================
+        // [get all the session (F:allStudySessions)]
+        app.get('/sessions', verifyFBToken, async (req, res) => {
+            try {
+                const result = await sessionsCollection.find().toArray();
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: 'Failed to fetch sessions' });
+            }
+        });
+
+        // [all available study sessions (F:studySessions)]:
+        app.get('/sessions/available', async (req, res) => {
+            try {
+                const sessions = await sessionsCollection.find({ status: 'approved' })
+                    // .sort({ registrationStart: 1 })
+                    .toArray();
+
+                res.send(sessions);
+            } catch (error) {
+                res.status(500).send({ message: 'Failed to fetch sessions', error });
+            }
+        });
+
+        // [only 6 approved session (F:AvailableSessions)]:
+        app.get('/sessions/approved', async (req, res) => {
+            try {
+                const sessions = await sessionsCollection.find({ status: 'approved' })
+                    // .sort({ registrationStart: 1 })
+                    .limit(6)
+                    .toArray();
+
+                res.send(sessions);
+            } catch (error) {
+                console.error("Error fetching approved sessions:", error);
+                res.status(500).send({ message: 'Error fetching approved sessions', error: error.message });
+            }
+        });
+
+      
