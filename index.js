@@ -98,4 +98,29 @@ async function run() {
         });
 
 
-       
+        // [users data]
+        app.post('/users', async (req, res) => {
+            const email = req.body.email;
+            const userExists = await usersCollection.findOne({ email });
+            if (userExists) {
+                return res.status(200).send({ message: 'user already exits', inserted: false });
+            }
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        })
+
+        // []
+        app.get('/users', verifyFBToken, async (req, res) => {
+            const search = req.query.search || '';
+
+            const query = {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } }
+                ]
+            };
+
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        });
