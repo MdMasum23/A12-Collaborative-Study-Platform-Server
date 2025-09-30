@@ -342,3 +342,21 @@ async function run() {
         });
 
 
+
+        // CollabStudy: REVIEWS API:==============================================
+        // [GET reviews by sessionId (F:SessionReviews)]:
+        app.get('/reviews/:sessionId', async (req, res) => {
+            try {
+                const { sessionId } = req.params;
+                const reviews = await reviewsCollection
+                    .find({ sessionId: sessionId })
+                    .sort({ reviewDate: -1 })
+                    .toArray();
+
+                res.send(reviews);
+            } catch (error) {
+                res.status(500).send({ message: 'Error fetching reviews', error });
+            }
+        });
+
+    
