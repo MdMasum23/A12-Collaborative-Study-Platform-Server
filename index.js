@@ -227,4 +227,18 @@ async function run() {
             }
         });
 
-     
+        // [Get only approved sessions created by tutor (F:UploadMaterials)]
+        app.get('/sessions/tutor/approved/:email', verifyFBToken, async (req, res) => {
+            try {
+                const email = req.params.email;
+                const query = { tutorEmail: email, status: 'approved' };
+                const result = await sessionsCollection.find(query).toArray();
+                res.send(result);
+            } catch (error) {
+                console.error('Error fetching approved tutor sessions:', error);
+                res.status(500).send({ error: 'Failed to fetch approved tutor sessions.' });
+            }
+        });
+
+
+        
