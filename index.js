@@ -395,4 +395,36 @@ async function run() {
             res.send(enrichedBookings);
         });
 
-        
+        // server/routes/bookings.js
+        app.get('/bookings/student', verifyFBToken, async (req, res) => {
+            try {
+                const email = req.query.email;
+                if (!email) return res.status(400).send({ message: 'Email is required' });
+
+                const bookings = await bookingsCollection.find({ studentEmail: email }).toArray();
+                res.send(bookings);
+            } catch (error) {
+                res.status(500).send({ message: error.message });
+            }
+        });
+
+
+        // [POST sessions booked (F:SessionDetails)]
+        app.post('/bookings', verifyFBToken, async (req, res) => {
+            const booking = req.body;
+
+            const existing = await bookingsCollection.findOne({
+                sessionId: booking.sessionId,
+                studentEmail: booking.studentEmail,
+            });
+
+            if (existing) {
+                return res.send({ success: false, message: 'Already booked' });
+            }
+
+            const result = await bookingsCollection.insertOne(booking);
+            res.send(result);
+        });
+
+
+      
