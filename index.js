@@ -359,4 +359,40 @@ async function run() {
             }
         });
 
-    
+        // [POST student review (F:SubmitReview)]:
+        app.post('/reviews', async (req, res) => {
+            try {
+                const review = req.body;
+                const result = await reviewsCollection.insertOne(review);
+                res.send(result);
+            } catch (error) {
+                res.status(500).send({ message: 'Failed to post review', error });
+            }
+        });
+
+
+        // CollabStudy: BOOKINGS API:=============================================
+        // [GET booking data (F:BookedSessions)]
+        app.get('/bookings', verifyFBToken, async (req, res) => {
+            const email = req.query.email;
+            if (!email) {
+                return res.status(400).send({ message: "Email is required" });
+            }
+
+            const bookings = await bookingsCollection.find({ studentEmail: email }).toArray();
+
+            const sessionIds = bookings.map(b => new ObjectId(b.sessionId));
+            const sessions = await sessionsCollection.find({ _id: { $in: sessionIds } }).toArray();
+
+            const enrichedBookings = bookings.map(booking => {
+                const session = sessions.find(s => s._id.toString() === booking.sessionId);
+                return {
+                    ...booking,
+                    session,
+                };
+            });
+
+            res.send(enrichedBookings);
+        });
+
+        
